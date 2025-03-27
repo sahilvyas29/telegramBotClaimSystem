@@ -21,3 +21,9 @@ CLAIM_AMOUNT=1000
 
 #token : 0x2aC1c0661cE15E74d90C164217A17f30b137fACe
 #nft : 0xD490448FCf7c4adaA498eE097E37A70c7fA2e82A
+
+#all contracts are deployed
+
+run script:
+npm run strat:bot  # to start bot
+npm run strat:dev  # to start server
