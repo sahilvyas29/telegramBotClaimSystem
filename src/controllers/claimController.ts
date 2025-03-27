@@ -95,8 +95,9 @@ export const postClaim = async (req: Request, res: Response) => {
 
 export const getStatus = async (req: Request, res: Response) => {
   console.log("req",req.query)
-  const walletAddress = (req.query.wallet as string).toLowerCase();
-  const claim = await Claim.findOne({ walletAddress });
+  const walletAddress = (req.query.telegramId as string);
+  const claim = await Claim.findOne({ telegramId:walletAddress });
+  
   if (!claim) {
     return res.json({ claimed: false });
   }

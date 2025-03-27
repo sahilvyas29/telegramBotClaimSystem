@@ -5,7 +5,15 @@ dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN!);
 
-bot.start(ctx => ctx.reply('Send your wallet address'));
+bot.start( async ctx =>{
+  console.log(JSON.stringify(ctx.update, null, 2));
+  let firstName = ctx.message.from.first_name;
+  ctx.reply(`Welcome to the Claim Bot ${firstName}`);
+  ctx.reply('Send your wallet address')}
+
+);
+
+
 bot.on('message', async (ctx, next:()=>Promise<void>) => {
   if (ctx.text && ctx.text.startsWith('/')){ 
     return next();
@@ -29,13 +37,20 @@ bot.on('message', async (ctx, next:()=>Promise<void>) => {
 });
 
 bot.command('status', async ctx => {
-  console.log("In status command")
-  const parts = ctx.message.text.split(' ');
-  console.log("parts");
-  if (!parts[1]) return ctx.reply('Usage: /status <wallet>');
   try {
-    const { data } = await axios.get(`${process.env.BACKEND_URL}/claim/${parts[1]}`);
-    ctx.reply(JSON.stringify(data));
+    const { data } = await axios.get(`${process.env.BACKEND_URL}/claim/status`, {
+      params: { telegramId: ctx.from.id } 
+    });
+    console.log(data);
+    if(data.claimed == false){
+      ctx.reply('Not claimed yet');
+    }
+    if(data.claimed == true){
+      let msg = "Already Claimed \n\n";
+      msg += `Tx Hash: ${data.txHash} \n\n`;
+      msg += `Claimed at: ${data.claimedAt}`;
+      ctx.reply(msg);
+    }
   } catch (e: any) {
     ctx.reply(`❌ ${e.response?.data?.message || e.message}`);
   }
